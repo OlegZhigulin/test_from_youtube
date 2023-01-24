@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Тестовое задание</title>
+        <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+    </head>
+    <body>
+        <div class="main_form">
+            <h1>Вводите сообщение</h1>
+            <input type="button" name="send_message_button" value="Отправить"></button>
+            <input type="text" id="messageText">
+        </div>
+        <div class="main_list">
+            <ol id='messages'>
+            </ol>
+        </div>
+        <script type="application/javascript" src="/static/websocket_client.js"></script>
+    </body>
+</html>

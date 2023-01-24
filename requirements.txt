@@ -1,0 +1,8 @@
+fastapi
+jinja2
+websockets
+uvicorn
+pytest
+httpx
+flake8
+autopep8
