@@ -15,6 +15,6 @@ def test_websocket():
     client = TestClient(app)
     with client.websocket_connect("/ws") as websocket:
         send_data = {"text": "Hello World"}
-        websocket.send_json(send_data, mode='text')
+        websocket.send_json(send_data, mode="text")
         data = websocket.receive_json(mode="text")
         assert data == send_data

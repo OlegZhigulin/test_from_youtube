@@ -27,7 +27,7 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     while True:
         try:
-            request = await websocket.receive_json(mode='text')
+            request = await websocket.receive_json(mode="text")
             await websocket.send_json(request)
         except WebSocketDisconnect as error:
             logging.error(error)
