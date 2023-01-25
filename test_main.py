@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
-
-from test_from_youtube.main import app
-
+import pytest
+from test_from_youtube.main import app, manager
+from httpx import AsyncClient
 client = TestClient(app)
 
 
@@ -13,8 +13,20 @@ def test_read_main():
 
 def test_websocket():
     client = TestClient(app)
-    with client.websocket_connect("/ws") as websocket:
-        send_data = {"text": "Hello World"}
+    client_id = 404 
+    with client.websocket_connect(f"/ws/{client_id}") as websocket:
+        manager.connect(websocket)
+        send_data = {"text": "Hello WebSocket"}
         websocket.send_json(send_data, mode="text")
-        data = websocket.receive_json(mode="text")
-        assert data == send_data
+        data = websocket.receive_json()
+        assert data == {"text": "Hello WebSocket", "numbers": 1}
+
+def test_websocket_next_user():
+    client = TestClient(app)
+    client_id = 500 
+    with client.websocket_connect(f"/ws/{client_id}") as websocket:
+        manager.connect(websocket)
+        send_data = {"text": "Hello WebSocket"}
+        websocket.send_json(send_data, mode="text")
+        data = websocket.receive_json()
+        assert data == {"text": "Hello WebSocket", "numbers": 2}

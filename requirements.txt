@@ -3,6 +3,7 @@ jinja2
 websockets
 uvicorn
 pytest
+pytest-trio
 httpx
 flake8
 autopep8

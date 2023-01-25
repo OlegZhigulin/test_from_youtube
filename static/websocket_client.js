@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const sendMessageButton = document.querySelector("[name=send_message_button]")
-    const ws = new WebSocket("ws://localhost:8000/ws");
+    let clientID = Date.now();
+    let ws = new WebSocket(`ws://localhost:8000/ws/${clientID}`);
     ws.onopen = () => {
         console.log("Connect OK");
         sendMessageButton.onclick = () => {
@@ -8,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 type: "message",
                 text: document.getElementById("messageText").value,
                 date: Date.now(),
-                status: "User"
+                status: "User",
             };
             ws.send(JSON.stringify(msg));
             document.getElementById("messageText").value = "";
@@ -18,9 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
     ws.onmessage = event => {
         let messages = document.getElementById("messages")
         let message = document.createElement("li")
-        msg = JSON.parse(event.data)
-        let content = document.createTextNode(msg.text)
-        message.appendChild(content)
+        let data = JSON.parse(event.data)
+        let num_message = document.createTextNode(data.numbers + ". ")
+        let text_message = document.createTextNode(data.text)
+        message.appendChild(num_message)
+        message.appendChild(text_message)
         messages.appendChild(message)
         }
     ws.onclose = function() {

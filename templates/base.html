@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Тестовое задание</title>
+        <meta charset="utf-8">
         <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
     </head>
     <body>
@@ -11,9 +12,9 @@
             <input type="text" id="messageText">
         </div>
         <div class="main_list">
-            <ol id='messages'>
-            </ol>
+            <ul id='messages'>
+            </ul>
         </div>
-        <script type="application/javascript" src="/static/websocket_client.js"></script>
+        <script charset="utf-8" type="application/javascript" src="/static/websocket_client.js"></script>
     </body>
 </html>
