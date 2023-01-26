@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Dict
 
 import uvicorn
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
@@ -14,26 +14,21 @@ templates = Jinja2Templates(directory="templates")
 
 logging.basicConfig(
     level=logging.INFO,
-    filename='main.log', 
+    filename='main.log',
     format='%(asctime)s, %(levelname)s, %(name)s, %(message)s'
 )
 
 
 class ConnectionManager:
     def __init__(self):
-        self.connections: List[WebSocket] = []
-        self.count_message: int = 0
+        self.count_people_and_message: Dict[str, int] = dict()
 
-    async def connect(self, websocket: WebSocket):
+    async def connect(self, websocket: WebSocket, client_id: int):
         await websocket.accept()
-        self.connections.append(websocket)
+        self.count_people_and_message[client_id] = 0
 
-    def disconnect(self, websocket: WebSocket):
-        self.connections.remove(websocket)
-
-    async def broadcast(self, data: str):
-        for connection in self.connections:
-            await connection.send_json(data)
+    def disconnect(self, client_id: int):
+        del self.count_people_and_message[client_id]
 
 
 manager = ConnectionManager()
@@ -46,17 +41,15 @@ async def get(request: Request):
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
-    await manager.connect(websocket)
+    await manager.connect(websocket, client_id)
     try:
         while True:
             request = await websocket.receive_json(mode="text")
-            manager.count_message += 1
-            request['numbers'] = manager.count_message
-            await manager.broadcast(request)
+            manager.count_people_and_message[client_id] += 1
+            request['numbers'] = manager.count_people_and_message[client_id]
+            await websocket.send_json(request)
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        if len(manager.connections) == 0:
-            manager.count_message = 0
+        manager.disconnect(client_id)
     except RuntimeError as error:
         logging.error(error)
 
